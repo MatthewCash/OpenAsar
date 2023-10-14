@@ -1,6 +1,23 @@
-const { app, session } = require('electron');
+const electron = require('electron');
+const { app, session } = electron;
 const { readFileSync } = require('fs');
 const { join } = require('path');
+
+class BrowserWindow extends electron.BrowserWindow {
+  constructor(options) {
+    if (oaConfig.transparentBackground) {
+      options.transparent = true;
+      options.backgroundColor = "#00000000";
+    }
+    super(options);
+  }
+}
+
+// Technique used by BetterDiscord and Vencord to override BrowserWindow
+Object.assign(BrowserWindow, electron.BrowserWindow);
+const electronPath = require.resolve("electron");
+delete require.cache[electronPath].exports;
+require.cache[electronPath].exports = { ...electron, BrowserWindow };
 
 if (!settings.get('enableHardwareAcceleration', true)) app.disableHardwareAcceleration();
 process.env.PULSE_LATENCY_MSEC = process.env.PULSE_LATENCY_MSEC ?? 30;
